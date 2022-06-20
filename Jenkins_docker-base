@@ -42,7 +42,6 @@ pipeline {
                 failure {
                     script{
                         sh "bash send_notification.sh 'dev deployment' 1"
-                        error "Failed, exiting now..."
                     }
                 }
             }
@@ -71,7 +70,6 @@ pipeline {
                 failure {
                     script{
                         sh "bash send_notification.sh 'dev deployment' 1"
-                        error "Failed, exiting now..."
                     }
                 }
             }
