@@ -36,12 +36,12 @@ pipeline {
             post{
                 success {
                     script{
-                        bash send_notification.sh “dev deployment” 0
+                        sh "send_notification.sh 'dev deployment' 0"
                     }
                 }
                 failure {
                     script{
-                        bash send_notification.sh “dev deployment” 1
+                        sh "send_notification.sh 'dev deployment' 1"
                         error "Failed, exiting now..."
                     }
                 }
@@ -65,12 +65,12 @@ pipeline {
             post{
                 success {
                     script{
-                        bash send_notification.sh “dev deployment” 0
+                        sh "send_notification.sh 'dev deployment' 0"
                     }
                 }
                 failure {
                     script{
-                        bash send_notification.sh “dev deployment” 1
+                        sh "send_notification.sh 'dev deployment' 1"
                         error "Failed, exiting now..."
                     }
                 }
