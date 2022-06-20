@@ -45,13 +45,6 @@ pipeline {
                         error "Failed, exiting now..."
                     }
                 }
-                aborted {
-                }
-                unstable {
-                    script{
-                          error "Unstable, exiting now..."                    
-                     }
-                }
             }
         }
 
@@ -80,13 +73,6 @@ pipeline {
                         bash send_notification.sh “dev deployment” 1
                         error "Failed, exiting now..."
                     }
-                }
-                aborted {
-                }
-                unstable {
-                    script{
-                          error "Unstable, exiting now..."                    
-                     }
                 }
             }
         }
