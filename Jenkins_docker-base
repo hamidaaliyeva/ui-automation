@@ -1,0 +1,103 @@
+def deploy(String environment){
+    echo "Deployment on ${environment} environment triggered... "
+    build job: "ui-tests", parameters: [string(name: "ENVIRONMENT", value: "${environment}")]
+    sh "docker-compose up"
+    sh "docker run -it --network=test-automation-setup mvn_tests mvn clean test -Dbrowser=chrome -DgridURL=selenium-hub:4444"
+}
+
+def test(String environment){
+    echo "Running tests on ${environment} environment.."
+    sh "docker-compose up"
+    sh "docker run -it --network=test-automation-setup mvn_tests mvn clean test -Dbrowser=chrome -DgridURL=selenium-hub:4444"
+}
+
+pipeline {
+    agent any
+    options {
+        skipStagesAfterUnstable()
+    }
+
+    triggers {
+        pollSCM('*/1 * * * *')
+    }
+
+    stages {
+        stage('build') {
+            steps {
+                echo 'building'
+            }
+        }
+        stage('deploy-staging') {
+            steps {
+                script{
+                    deploy("STAGING")
+                }
+            }
+            post{
+                success {
+                    script{
+                        bash send_notification.sh “dev deployment” 0
+                    }
+                }
+                failure {
+                    script{
+                        bash send_notification.sh “dev deployment” 1
+                        error "Failed, exiting now..."
+                    }
+                }
+                aborted {
+                }
+                unstable {
+                    script{
+                          error "Unstable, exiting now..."                    
+                     }
+                }
+            }
+        }
+
+        stage('test-staging') {
+            steps {
+                script{
+                    test("STAGING")
+                }
+            }
+        }
+
+        stage('deploy-prd') {
+            steps {
+                script{
+                    deploy("PRD")
+                }
+            }
+            post{
+                success {
+                    script{
+                        bash send_notification.sh “dev deployment” 0
+                    }
+                }
+                failure {
+                    script{
+                        bash send_notification.sh “dev deployment” 1
+                        error "Failed, exiting now..."
+                    }
+                }
+                aborted {
+                }
+                unstable {
+                    script{
+                          error "Unstable, exiting now..."                    
+                     }
+                }
+            }
+        }
+
+        stage('test-prd') {
+            steps {
+                script{
+                    test("PRD")
+                }
+            }
+        }
+
+    }
+}
